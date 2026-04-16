@@ -1,0 +1,1546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>QwQ IP Lookup</title>
+    <meta name="description" content="查看你的公网 IPv4 / IPv6 地址、地理位置、ASN 等详细信息">
+    <link rel="icon" type="image/webp" href="https://www.qwq.lu/assets/img/favicon.webp">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <script>
+        (function () {
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else if (theme === 'light') {
+                document.documentElement.classList.remove('dark');
+            } else {
+                if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    document.documentElement.classList.add('dark');
+                }
+            }
+        })();
+    </script>
+
+    <style>
+        :root {
+            --color-qwq-primary: #6750a4;
+            --color-qwq-primary-container: #eaddff;
+            --color-qwq-primary-strong: #4f378b;
+            --color-qwq-secondary-container: #e8def8;
+            --color-qwq-surface: #fef7ff;
+            --color-qwq-surface-soft: #f6eff8;
+            --color-qwq-surface-variant: #e7e0ec;
+            --color-qwq-outline: #7c7482;
+            --color-qwq-text: #1d1b20;
+            --color-qwq-text-soft: #5f5a64;
+            --color-qwq-dark-primary: #d0bcff;
+            --color-qwq-dark-primary-container: #4f378b;
+            --color-qwq-dark-secondary-container: #4a4458;
+            --color-qwq-dark-surface: #141218;
+            --color-qwq-dark-surface-soft: #1d1b20;
+            --color-qwq-dark-surface-variant: #2b2930;
+            --color-qwq-dark-outline: #938f99;
+            --color-qwq-dark-text: #e6e1e5;
+            --color-qwq-dark-text-soft: #cac4d0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            min-height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+            background: linear-gradient(180deg, #fef7ff 0%, #f9f3fb 100%);
+            color: var(--color-qwq-text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.35s ease, color 0.35s ease;
+        }
+
+        html.dark body {
+            background: linear-gradient(180deg, #141218 0%, #1b1820 100%);
+            color: var(--color-qwq-dark-text);
+        }
+
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(103, 80, 164, 0.25) transparent;
+        }
+
+        *::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        *::-webkit-scrollbar-thumb {
+            background: rgba(103, 80, 164, 0.22);
+            border-radius: 999px;
+        }
+
+        .app-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 16px 20px;
+            background: rgba(254, 247, 255, 0.84);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(124, 116, 130, 0.10);
+        }
+
+        html.dark .app-header {
+            background: rgba(20, 18, 24, 0.84);
+            border-bottom-color: rgba(255, 255, 255, 0.06);
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: inherit;
+            text-decoration: none;
+            position: relative;
+        }
+
+        .header-brand:visited {
+            color: inherit;
+        }
+
+        .header-icon-wrapper {
+            width: 40px;
+            height: 40px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--color-qwq-primary-container);
+            color: var(--color-qwq-primary-strong);
+            box-shadow: inset 0 0 0 1px rgba(103, 80, 164, 0.08);
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+
+        html.dark .header-icon-wrapper {
+            background: var(--color-qwq-dark-primary-container);
+            color: var(--color-qwq-dark-primary);
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .header-brand-tooltip {
+            position: absolute;
+            left: 0;
+            top: calc(100% + 10px);
+            padding: 8px 14px;
+            border-radius: 14px;
+            background: rgba(254, 247, 255, 0.98);
+            border: 1px solid rgba(124, 116, 130, 0.14);
+            box-shadow: 0 12px 28px rgba(103, 80, 164, 0.10);
+            color: var(--color-qwq-text-soft);
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(6px);
+            transition: opacity 0.18s ease, transform 0.18s ease;
+        }
+
+        html.dark .header-brand-tooltip {
+            background: rgba(20, 18, 24, 0.98);
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.24);
+            color: var(--color-qwq-dark-text-soft);
+        }
+
+        .header-brand:hover .header-brand-tooltip {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .theme-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 999px;
+            background: transparent;
+            color: var(--color-qwq-text-soft);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.25s ease, background-color 0.25s ease, color 0.25s ease;
+        }
+
+        html.dark .theme-btn {
+            color: var(--color-qwq-dark-text-soft);
+        }
+
+        .theme-btn:hover {
+            transform: translateY(-1px);
+            background: rgba(255, 255, 255, 0.42);
+        }
+
+        html.dark .theme-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .theme-btn .material-symbols-rounded {
+            font-size: 20px;
+        }
+
+        .main-content {
+            width: 100%;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 48px 20px 56px;
+            flex: 1;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 44px;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .hero-title {
+            font-size: clamp(2.1rem, 6vw, 3.35rem);
+            line-height: 1.06;
+            letter-spacing: -0.04em;
+            font-weight: 700;
+            color: var(--color-qwq-text);
+            margin-bottom: 12px;
+        }
+
+        .hero-title:empty {
+            display: none;
+            margin-bottom: 0;
+        }
+
+        html.dark .hero-title {
+            color: var(--color-qwq-dark-text);
+        }
+
+        .hero-subtitle {
+            max-width: 680px;
+            margin: 0 auto;
+            font-size: 15px;
+            line-height: 1.8;
+            color: var(--color-qwq-text-soft);
+        }
+
+        .hero-subtitle:empty {
+            display: none;
+        }
+
+        html.dark .hero-subtitle {
+            color: var(--color-qwq-dark-text-soft);
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-bottom: 48px;
+        }
+
+        .ip-card,
+        .api-tabs-container {
+            background: rgba(254, 247, 255, 0.94);
+            border: 1px solid rgba(124, 116, 130, 0.14);
+            box-shadow: 0 10px 24px rgba(103, 80, 164, 0.06);
+            transition: transform 0.28s ease-out, box-shadow 0.28s ease-out, border-color 0.28s ease-out, background-color 0.28s ease-out;
+        }
+
+        html.dark .ip-card,
+        html.dark .api-tabs-container {
+            background: rgba(29, 27, 32, 0.96);
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 12px 26px rgba(0, 0, 0, 0.22);
+        }
+
+        .ip-card:hover,
+        .api-tabs-container:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 30px rgba(103, 80, 164, 0.08);
+            border-color: rgba(103, 80, 164, 0.22);
+        }
+
+        html.dark .ip-card:hover,
+        html.dark .api-tabs-container:hover {
+            border-color: rgba(208, 188, 255, 0.18);
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.26);
+        }
+
+        #ipCard:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 30px rgba(103, 80, 164, 0.08);
+            border-color: rgba(103, 80, 164, 0.22);
+        }
+
+        #uaCard:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 30px rgba(103, 80, 164, 0.08);
+            border-color: rgba(103, 80, 164, 0.22);
+        }
+
+        html.dark #ipCard:hover {
+            border-color: rgba(208, 188, 255, 0.18);
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.26);
+        }
+
+        html.dark #uaCard:hover {
+            border-color: rgba(208, 188, 255, 0.18);
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.26);
+        }
+
+        .ip-card {
+            border-radius: 2rem;
+            padding: 24px;
+            overflow: hidden;
+        }
+
+        .ua-card {
+            border-radius: 2rem;
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .ua-head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .ua-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .ua-label {
+            margin-bottom: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--color-qwq-outline);
+        }
+
+        html.dark .ua-label {
+            color: var(--color-qwq-dark-outline);
+        }
+
+        .ua-value {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 13px;
+            line-height: 1.8;
+            color: var(--color-qwq-text);
+            word-break: break-all;
+            padding-right: 4px;
+        }
+
+        html.dark .ua-value {
+            color: var(--color-qwq-dark-text);
+        }
+
+        .ua-icon {
+            width: 36px;
+            height: 36px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            background: rgba(231, 224, 236, 0.72);
+            color: var(--color-qwq-primary-strong);
+        }
+
+        html.dark .ua-icon {
+            background: rgba(43, 41, 48, 0.92);
+            color: var(--color-qwq-dark-primary);
+        }
+
+        .ua-icon .material-symbols-rounded {
+            font-size: 18px;
+        }
+
+        .ua-copy-btn {
+            position: static;
+            top: auto;
+            right: auto;
+            transform: none;
+            flex-shrink: 0;
+            margin-top: 0;
+            margin-left: 0;
+            width: auto;
+            min-width: 108px;
+            height: 100px;
+            padding: 0 16px;
+            gap: 10px;
+            border-radius: 12px;
+            background: var(--color-qwq-primary-container);
+            color: var(--color-qwq-primary-strong);
+            opacity: 1;
+            box-shadow: 0 4px 10px rgba(103, 80, 164, 0.10);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: row;
+            white-space: nowrap;
+        }
+
+        .ua-copy-btn:hover {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        html.dark .ua-copy-btn {
+            background: var(--color-qwq-dark-primary-container);
+            color: var(--color-qwq-dark-primary);
+        }
+
+        .ua-copy-btn.is-copied {
+            background: #d3f4d8;
+            color: #1e612f;
+            box-shadow: none;
+        }
+
+        html.dark .ua-copy-btn.is-copied {
+            background: #1e612f;
+            color: #d3f4d8;
+        }
+
+        .ua-copy-btn .copy-btn-text {
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1;
+            white-space: nowrap;
+        }
+
+        .ua-copy-btn .material-symbols-rounded {
+            flex-shrink: 0;
+            line-height: 1;
+            font-size: 18px;
+        }
+
+        .api-copy-btn {
+            position: static;
+            top: auto;
+            right: auto;
+            transform: none;
+            width: auto;
+            min-width: 92px;
+            height: 100%;
+            padding: 0 14px;
+            gap: 8px;
+            border-radius: 18px;
+            background: var(--color-qwq-primary-container);
+            color: var(--color-qwq-primary-strong);
+            opacity: 1;
+        }
+
+        .api-copy-btn:hover {
+            transform: translateY(-1px) scale(1.06);
+        }
+
+        html.dark .api-copy-btn {
+            background: var(--color-qwq-dark-primary-container);
+            color: var(--color-qwq-dark-primary);
+        }
+
+        .api-copy-btn.is-copied {
+            background: #d3f4d8;
+            color: #1e612f;
+            box-shadow: none;
+        }
+
+        html.dark .api-copy-btn.is-copied {
+            background: #1e612f;
+            color: #d3f4d8;
+        }
+
+        .api-copy-btn .copy-btn-text {
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1;
+            white-space: nowrap;
+        }
+
+        .api-copy-btn .material-symbols-rounded {
+            flex-shrink: 0;
+            line-height: 1;
+            font-size: 18px;
+        }
+
+        .ip-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .ip-card-title-group {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .ip-stack {
+            display: grid;
+            gap: 22px;
+        }
+
+        .ip-block {
+            min-width: 0;
+        }
+
+        .ip-block + .ip-block {
+            padding-top: 22px;
+            border-top: 1px solid rgba(124, 116, 130, 0.14);
+        }
+
+        html.dark .ip-block + .ip-block {
+            border-top-color: rgba(255, 255, 255, 0.08);
+        }
+
+        @media (min-width: 781px) {
+            .ip-stack {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 20px;
+            }
+
+            .ip-block + .ip-block {
+                padding-top: 0;
+                padding-left: 20px;
+                border-top: 0;
+                border-left: 1px solid rgba(124, 116, 130, 0.14);
+            }
+
+            html.dark .ip-block + .ip-block {
+                border-left-color: rgba(255, 255, 255, 0.08);
+            }
+        }
+
+        .ip-card-label {
+            margin-bottom: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--color-qwq-outline);
+        }
+
+        html.dark .ip-card-label {
+            color: var(--color-qwq-dark-outline);
+        }
+
+        .ip-card-address {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 20px;
+            line-height: 1.6;
+            color: var(--color-qwq-text);
+            word-break: break-all;
+        }
+
+        html.dark .ip-card-address {
+            color: var(--color-qwq-dark-text);
+        }
+
+        .info-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-top: 1px solid rgba(124, 116, 130, 0.14);
+        }
+
+        html.dark .info-row {
+            border-top-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .info-row:first-child {
+            border-top: 0;
+            padding-top: 0;
+        }
+
+        .info-row-icon {
+            width: 36px;
+            height: 36px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            background: rgba(231, 224, 236, 0.72);
+            color: var(--color-qwq-primary-strong);
+        }
+
+        html.dark .info-row-icon {
+            background: rgba(43, 41, 48, 0.92);
+            color: var(--color-qwq-dark-primary);
+        }
+
+        .info-row-icon .material-symbols-rounded {
+            font-size: 18px;
+        }
+
+        .info-row-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .info-row-label {
+            margin-bottom: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--color-qwq-outline);
+        }
+
+        html.dark .info-row-label {
+            color: var(--color-qwq-dark-outline);
+        }
+
+        .info-row-value {
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--color-qwq-text);
+            word-break: break-all;
+        }
+
+        html.dark .info-row-value {
+            color: var(--color-qwq-dark-text);
+        }
+
+        .info-row-note,
+        .loading-text,
+        .card-error-text,
+        .card-error-hint {
+            font-size: 12px;
+            color: var(--color-qwq-text-soft);
+        }
+
+        html.dark .info-row-note,
+        html.dark .loading-text,
+        html.dark .card-error-text,
+        html.dark .card-error-hint {
+            color: var(--color-qwq-dark-text-soft);
+        }
+
+        .card-loading,
+        .card-error {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 12px;
+            padding: 40px 0 18px;
+        }
+
+        .card-error {
+            min-height: 260px;
+        }
+
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border-radius: 999px;
+            border: 3px solid rgba(103, 80, 164, 0.16);
+            border-top-color: var(--color-qwq-primary);
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .card-error .material-symbols-rounded {
+            font-size: 30px;
+            color: #b3261e;
+        }
+
+        html.dark .card-error .material-symbols-rounded {
+            color: #f2b8b5;
+        }
+
+        .curl-section {
+            margin-top: 8px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .section-accent {
+            width: 28px;
+            height: 5px;
+            border-radius: 999px;
+            background: var(--color-qwq-primary-container);
+        }
+
+        html.dark .section-accent {
+            background: var(--color-qwq-dark-primary-container);
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .api-tabs-container {
+            border-radius: 2rem;
+            overflow: hidden;
+        }
+
+        .tabs-bar {
+            position: relative;
+            display: flex;
+            overflow-x: auto;
+            background: rgba(231, 224, 236, 0.38);
+            border-bottom: 1px solid rgba(124, 116, 130, 0.12);
+            scrollbar-width: none;
+        }
+
+        .tabs-bar::-webkit-scrollbar {
+            display: none;
+        }
+
+        html.dark .tabs-bar {
+            background: rgba(43, 41, 48, 0.72);
+            border-bottom-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 14px 16px;
+            border: 0;
+            background: transparent;
+            color: var(--color-qwq-text-soft);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+
+        html.dark .tab-btn {
+            color: var(--color-qwq-dark-text-soft);
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.42);
+        }
+
+        html.dark .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn.active {
+            color: var(--color-qwq-primary-strong);
+        }
+
+        html.dark .tab-btn.active {
+            color: var(--color-qwq-dark-primary);
+        }
+
+        .tab-btn .material-symbols-rounded {
+            font-size: 18px;
+        }
+
+        .tab-indicator {
+            position: absolute;
+            bottom: 0;
+            height: 3px;
+            background: var(--color-qwq-primary);
+            border-radius: 999px 999px 0 0;
+            transition: left 0.35s cubic-bezier(0.2, 0, 0, 1), width 0.35s cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        html.dark .tab-indicator {
+            background: var(--color-qwq-dark-primary);
+        }
+
+        .tab-panel {
+            display: none;
+            padding: 24px;
+            animation: tabFadeIn 0.3s ease-out;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        @keyframes tabFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tab-panel-desc {
+            margin-bottom: 14px;
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--color-qwq-text-soft);
+        }
+
+        html.dark .tab-panel-desc {
+            color: var(--color-qwq-dark-text-soft);
+        }
+
+        .curl-code-wrapper {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 12px;
+            align-items: stretch;
+            margin-bottom: 14px;
+        }
+
+        .curl-code {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            padding: 12px 14px;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            border-radius: 18px;
+            background: rgba(231, 224, 236, 0.38);
+            color: var(--color-qwq-text);
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        html.dark .curl-code {
+            background: rgba(43, 41, 48, 0.72);
+            color: var(--color-qwq-dark-text);
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 50%;
+            right: 8px;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 30px;
+            border: 0;
+            border-radius: 12px;
+            background: var(--color-qwq-primary-container);
+            color: var(--color-qwq-primary-strong);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        html.dark .copy-btn {
+            background: var(--color-qwq-dark-primary-container);
+            color: var(--color-qwq-dark-primary);
+        }
+
+        .copy-btn:hover {
+            transform: translateY(calc(-50% - 1px));
+        }
+
+        .copy-btn .material-symbols-rounded {
+            font-size: 16px;
+        }
+
+        .copy-btn.is-copied .material-symbols-rounded {
+            font-variation-settings: 'FILL' 1;
+        }
+
+        .copy-btn.ua-copy-btn,
+        .copy-btn.api-copy-btn {
+            position: static;
+            top: auto;
+            right: auto;
+            transform: none;
+            width: auto;
+            height: auto;
+            border-radius: 18px;
+            opacity: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .example-label {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--color-qwq-outline);
+        }
+
+        html.dark .example-label {
+            color: var(--color-qwq-dark-outline);
+        }
+
+        .example-label .material-symbols-rounded {
+            font-size: 14px;
+        }
+
+        .example-output {
+            max-height: 260px;
+            overflow: auto;
+            white-space: pre;
+            font-family: "JetBrains Mono", monospace;
+            font-size: 12px;
+            line-height: 1.65;
+            padding: 14px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.78);
+            color: var(--color-qwq-text);
+        }
+
+        html.dark .example-output {
+            background: rgba(20, 18, 24, 0.92);
+            color: var(--color-qwq-dark-text);
+        }
+
+        .app-footer {
+            padding: 0 20px 28px;
+            text-align: center;
+        }
+
+        .footer-text {
+            font-size: 11px;
+            color: rgba(95, 90, 100, 0.62);
+        }
+
+        html.dark .footer-text {
+            color: rgba(202, 196, 208, 0.52);
+        }
+
+        .stagger-item {
+            opacity: 0;
+            transform: translateY(18px);
+        }
+
+        .stagger-item.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .copy-toast {
+            position: fixed;
+            left: 50%;
+            bottom: 24px;
+            transform: translateX(-50%) translateY(12px);
+            opacity: 0;
+            pointer-events: none;
+            padding: 12px 20px;
+            border-radius: 999px;
+            background: var(--color-qwq-primary);
+            color: #fff;
+            font-size: 13px;
+            box-shadow: 0 18px 40px rgba(103, 80, 164, 0.16);
+            transition: opacity 0.22s ease, transform 0.22s ease;
+            z-index: 999;
+        }
+
+        html.dark .copy-toast {
+            background: var(--color-qwq-dark-primary-container);
+            color: var(--color-qwq-dark-primary);
+        }
+
+        .copy-toast.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 520px) {
+            .curl-code-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .api-copy-btn {
+                justify-self: end;
+            }
+
+            .tab-btn {
+                font-size: 12px;
+                padding: 12px 10px;
+            }
+
+            .tab-panel {
+                padding: 18px 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app-header {
+                padding: 14px 16px;
+            }
+
+            .main-content {
+                padding: 34px 16px 46px;
+            }
+
+            .ip-card {
+                padding: 20px;
+            }
+
+            .ua-card {
+                padding: 18px 20px;
+            }
+
+            .ip-card-address {
+                font-size: 16px;
+            }
+
+            .hero {
+                margin-bottom: 32px;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="app-header" id="appHeader">
+        <a class="header-brand" href="https://www.qwq.lu" id="headerBrand">
+            <div class="header-icon-wrapper">
+                <span class="material-symbols-rounded">travel_explore</span>
+            </div>
+            <h1 class="header-title">IP Lookup</h1>
+            <span class="header-brand-tooltip">← Back to QwQ.lu</span>
+        </a>
+        <button class="theme-btn" id="themeToggle" type="button" title="跟随系统" aria-label="跟随系统">
+            <span class="material-symbols-rounded" id="themeIcon">routine</span>
+        </button>
+    </header>
+
+    <!-- Main -->
+    <main class="main-content">
+
+        <!-- Hero -->
+        <div class="hero" id="hero">
+            <h2 class="hero-title"></h2>
+            <p class="hero-subtitle"></p>
+        </div>
+
+        <!-- IP Cards -->
+        <div class="cards-grid">
+            <div class="ip-card ua-card stagger-item" id="uaCard">
+                <div class="ua-head">
+                    <div class="ua-icon">
+                        <span class="material-symbols-rounded">devices</span>
+                    </div>
+                    <div class="ua-body">
+                        <div class="ua-label">User-Agent</div>
+                        <div class="ua-value" id="userAgentValue">正在获取…</div>
+                    </div>
+                </div>
+            </div>
+            <div class="ip-card stagger-item" id="ipCard">
+                <div class="ip-stack">
+                    <div class="ip-block">
+                        <div class="ip-card-header">
+                            <div class="ip-card-title-group">
+                                <div class="ip-card-label">IPv4 地址</div>
+                                <div class="ip-card-address" id="ipv4Address">—</div>
+                            </div>
+                        </div>
+                        <div id="ipv4Content">
+                            <div class="card-loading">
+                                <div class="spinner"></div>
+                                <span class="loading-text">正在查询 IPv4 信息…</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ip-block">
+                        <div class="ip-card-header">
+                            <div class="ip-card-title-group">
+                                <div class="ip-card-label">IPv6 地址</div>
+                                <div class="ip-card-address" id="ipv6Address">—</div>
+                            </div>
+                        </div>
+                        <div id="ipv6Content">
+                            <div class="card-loading">
+                                <div class="spinner"></div>
+                                <span class="loading-text">正在查询 IPv6 信息…</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Curl Examples (Tabbed) -->
+        <section class="curl-section stagger-item" id="curlSection">
+            <div class="section-header">
+                <div class="section-accent"></div>
+                <h3 class="section-title">API 使用示例</h3>
+            </div>
+            <div class="api-tabs-container">
+                <div class="tabs-bar" id="tabsBar">
+                    <button class="tab-btn active" data-tab="v4-plain" id="tabBtn0">
+                        <span class="material-symbols-rounded">dns</span>
+                        IPv4 纯文本
+                    </button>
+                    <button class="tab-btn" data-tab="v6-plain" id="tabBtn1">
+                        <span class="material-symbols-rounded">language</span>
+                        IPv6 纯文本
+                    </button>
+                    <button class="tab-btn" data-tab="v4-detail" id="tabBtn2">
+                        <span class="material-symbols-rounded">data_object</span>
+                        IPv4 详细
+                    </button>
+                    <button class="tab-btn" data-tab="v6-detail" id="tabBtn3">
+                        <span class="material-symbols-rounded">data_object</span>
+                        IPv6 详细
+                    </button>
+                    <div class="tab-indicator" id="tabIndicator"></div>
+                </div>
+                <div class="tab-panels">
+                    <!-- Tab 1: IPv4 Plain -->
+                    <div class="tab-panel active" id="panel-v4-plain">
+                        <div class="tab-panel-desc">直接返回你的 IPv4 地址字符串，适合在脚本中快速获取公网 IP。</div>
+                        <div class="curl-code-wrapper">
+                            <div class="curl-code" id="curl1">curl https://4.qwq.lu/</div>
+                            <button class="copy-btn api-copy-btn" type="button" data-copy-source="curl1" title="复制" aria-label="复制">
+                                <span class="material-symbols-rounded">content_copy</span>
+                                <span class="copy-btn-text">复制</span>
+                            </button>
+                        </div>
+                        <div class="example-label">
+                            <span class="material-symbols-rounded">terminal</span>
+                            返回示例
+                        </div>
+                        <div class="example-output">203.0.113.42</div>
+                    </div>
+                    <!-- Tab 2: IPv6 Plain -->
+                    <div class="tab-panel" id="panel-v6-plain">
+                        <div class="tab-panel-desc">直接返回你的 IPv6 地址字符串，适合在脚本中快速获取公网 IP。</div>
+                        <div class="curl-code-wrapper">
+                            <div class="curl-code" id="curl2">curl https://6.qwq.lu/</div>
+                            <button class="copy-btn api-copy-btn" type="button" data-copy-source="curl2" title="复制" aria-label="复制">
+                                <span class="material-symbols-rounded">content_copy</span>
+                                <span class="copy-btn-text">复制</span>
+                            </button>
+                        </div>
+                        <div class="example-label">
+                            <span class="material-symbols-rounded">terminal</span>
+                            返回示例
+                        </div>
+                        <div class="example-output">2001:db8:85a3::8a2e:370:7334</div>
+                    </div>
+                    <!-- Tab 3: IPv4 Detail -->
+                    <div class="tab-panel" id="panel-v4-detail">
+                        <div class="tab-panel-desc">返回包含 IP、地理位置、ASN、User Agent 等完整信息的 JSON 对象。</div>
+                        <div class="curl-code-wrapper">
+                            <div class="curl-code" id="curl3">curl https://4.qwq.lu/?detail</div>
+                            <button class="copy-btn api-copy-btn" type="button" data-copy-source="curl3" title="复制" aria-label="复制">
+                                <span class="material-symbols-rounded">content_copy</span>
+                                <span class="copy-btn-text">复制</span>
+                            </button>
+                        </div>
+                        <div class="example-label">
+                            <span class="material-symbols-rounded">terminal</span>
+                            返回示例 (JSON)
+                        </div>
+                        <div class="example-output">{
+                            "ip": "203.0.113.42",
+                            "ipv6": null,
+                            "country": "JP",
+                            "region": "Tokyo",
+                            "regionCode": "13",
+                            "city": "Chiyoda",
+                            "postalCode": "100-0001",
+                            "continent": "AS",
+                            "timezone": "Asia/Tokyo",
+                            "latitude": "35.6895",
+                            "longitude": "139.6917",
+                            "colo": "NRT",
+                            "asn": 13335,
+                            "asOrganization": "Cloudflare, Inc.",
+                            "metroCode": null,
+                            "protocol": "HTTP/2",
+                            "tlsVersion": "TLSv1.3",
+                            "userAgent": "curl/8.7.1"
+                            }</div>
+                    </div>
+                    <!-- Tab 4: IPv6 Detail -->
+                    <div class="tab-panel" id="panel-v6-detail">
+                        <div class="tab-panel-desc">返回包含 IPv6、地理位置、ASN、User Agent 等完整信息的 JSON 对象。</div>
+                        <div class="curl-code-wrapper">
+                            <div class="curl-code" id="curl4">curl https://6.qwq.lu/?detail</div>
+                            <button class="copy-btn api-copy-btn" type="button" data-copy-source="curl4" title="复制" aria-label="复制">
+                                <span class="material-symbols-rounded">content_copy</span>
+                                <span class="copy-btn-text">复制</span>
+                            </button>
+                        </div>
+                        <div class="example-label">
+                            <span class="material-symbols-rounded">terminal</span>
+                            返回示例 (JSON)
+                        </div>
+                        <div class="example-output">{
+                            "ip": "203.0.113.42",
+                            "ipv6": "2001:db8:85a3::8a2e:370:7334",
+                            "country": "JP",
+                            "region": "Tokyo",
+                            "regionCode": "13",
+                            "city": "Chiyoda",
+                            "postalCode": "100-0001",
+                            "continent": "AS",
+                            "timezone": "Asia/Tokyo",
+                            "latitude": "35.6895",
+                            "longitude": "139.6917",
+                            "colo": "NRT",
+                            "asn": 13335,
+                            "asOrganization": "Cloudflare, Inc.",
+                            "metroCode": null,
+                            "protocol": "HTTP/2",
+                            "tlsVersion": "TLSv1.3",
+                            "userAgent": "curl/8.7.1"
+                            }</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <p class="footer-text">© <span id="currentYear"></span> ip.QwQ.lu · Hosted By GreepAr</p>
+    </footer>
+
+    <script>
+        // ===== Theme Toggle (3-state: light / auto / dark) =====
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const storedTheme = localStorage.getItem('theme') || 'auto';
+        const themeModes = ['light', 'auto', 'dark'];
+
+        function applyTheme(mode) {
+            if (mode === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else if (mode === 'light') {
+                document.documentElement.classList.remove('dark');
+            } else {
+                // auto
+                if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+        }
+
+        function updateThemeButton(mode) {
+            if (mode === 'light') {
+                themeIcon.textContent = 'light_mode';
+                themeToggle.title = '浅色模式';
+                themeToggle.setAttribute('aria-label', '浅色模式');
+                return;
+            }
+            if (mode === 'dark') {
+                themeIcon.textContent = 'dark_mode';
+                themeToggle.title = '深色模式';
+                themeToggle.setAttribute('aria-label', '深色模式');
+                return;
+            }
+            themeIcon.textContent = 'routine';
+            themeToggle.title = '跟随系统';
+            themeToggle.setAttribute('aria-label', '跟随系统');
+        }
+
+        let currentThemeMode = storedTheme;
+
+        themeToggle.addEventListener('click', () => {
+            const currentIndex = themeModes.indexOf(currentThemeMode);
+            currentThemeMode = themeModes[(currentIndex + 1) % themeModes.length];
+            localStorage.setItem('theme', currentThemeMode);
+            applyTheme(currentThemeMode);
+            updateThemeButton(currentThemeMode);
+        });
+
+        // Listen for system theme changes when in auto mode
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            const current = localStorage.getItem('theme') || 'auto';
+            if (current === 'auto') {
+                applyTheme('auto');
+            }
+        });
+
+        updateThemeButton(storedTheme);
+        applyTheme(storedTheme);
+
+        // ===== Hero content & animation =====
+        const hero = document.getElementById('hero');
+        const heroTitle = document.querySelector('.hero-title');
+        const heroSubtitle = document.querySelector('.hero-subtitle');
+        if (heroTitle && !heroTitle.textContent.trim()) {
+            heroTitle.textContent = '';
+        }
+        if (heroSubtitle && !heroSubtitle.textContent.trim()) {
+            heroSubtitle.textContent = '';
+        }
+        hero.animate([
+            { opacity: 0, transform: 'translateY(20px)' },
+            { opacity: 1, transform: 'translateY(0)' }
+        ], { duration: 700, easing: 'ease-out', fill: 'forwards' });
+
+        // ===== Stagger card animations =====
+        function animateStaggerItems() {
+            const items = document.querySelectorAll('.stagger-item');
+            items.forEach((item, index) => {
+                const animation = item.animate([
+                    { opacity: 0, transform: 'translateY(18px)' },
+                    { opacity: 1, transform: 'translateY(0)' }
+                ], {
+                    duration: 500,
+                    delay: 200 + index * 100,
+                    easing: 'ease-out',
+                    fill: 'both'
+                });
+                animation.onfinish = () => {
+                    item.classList.add('is-visible');
+                    animation.cancel();
+                };
+            });
+        }
+        animateStaggerItems();
+
+        const userAgentValue = document.getElementById('userAgentValue');
+
+        function updateUserAgent(value) {
+            if (!userAgentValue) return;
+            const nextValue = value && String(value).trim() ? value : '未知';
+            userAgentValue.textContent = nextValue;
+        }
+
+        // ===== Render IP info rows =====
+        function renderIPInfo(data, contentEl, addressEl) {
+            addressEl.textContent = data.ip || data.ipv6 || '—';
+            updateUserAgent(data.userAgent);
+
+            const rows = [
+                { icon: 'flag', label: '国家', value: data.country || '未知' },
+                { icon: 'location_city', label: '城市', value: data.city || '未知', note: '城市信息可能不准确' },
+                { icon: 'http', label: 'HTTP 协议', value: data.protocol || '未知' },
+                { icon: 'hub', label: 'ASN', value: data.asn ? `AS${data.asn} — ${data.asOrganization || ''}` : '未知' },
+            ];
+
+            let html = '<div class="info-list">';
+            rows.forEach(row => {
+                html += `
+                    <div class="info-row">
+                        <div class="info-row-icon">
+                            <span class="material-symbols-rounded">${row.icon}</span>
+                        </div>
+                        <div class="info-row-content">
+                            <div class="info-row-label">${row.label}</div>
+                            <div class="info-row-value">${row.value}</div>
+                            ${row.note ? `<div class="info-row-note">${row.note}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            contentEl.innerHTML = html;
+        }
+
+        function renderError(contentEl, addressEl, message, hint) {
+            addressEl.textContent = '—';
+            contentEl.innerHTML = `
+                <div class="card-error">
+                    <span class="material-symbols-rounded">error_outline</span>
+                    <div class="card-error-text">${message}</div>
+                    ${hint ? `<div class="card-error-hint">${hint}</div>` : ''}
+                </div>
+            `;
+        }
+
+        // ===== Fetch IP data =====
+        async function fetchIPData(url, contentEl, addressEl, versionKey) {
+            try {
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 8000);
+                const resp = await fetch(url, { signal: controller.signal });
+                clearTimeout(timeout);
+
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                const data = await resp.json();
+                renderIPInfo(data, contentEl, addressEl);
+            } catch (err) {
+                if (err.name === 'AbortError') {
+                    renderError(contentEl, addressEl, `无法获取到 ${versionKey} 地址`, '请求超时');
+                } else {
+                    renderError(contentEl, addressEl, `无法获取到 ${versionKey} 地址`, '你的网络可能不支持该协议');
+                }
+            }
+        }
+
+        fetchIPData(
+            'https://4.qwq.lu/?detail',
+            document.getElementById('ipv4Content'),
+            document.getElementById('ipv4Address'),
+            'v4'
+        );
+        fetchIPData(
+            'https://6.qwq.lu/?detail',
+            document.getElementById('ipv6Content'),
+            document.getElementById('ipv6Address'),
+            'v6'
+        );
+
+        // ===== Copy helper =====
+        function setCopyButtonState(button, copied) {
+            const icon = button.querySelector('.material-symbols-rounded');
+            const text = button.querySelector('.copy-btn-text');
+            if (!icon) return;
+            if (copied) {
+                button.classList.add('is-copied');
+                icon.textContent = 'check';
+                if (text) text.textContent = '已复制';
+                return;
+            }
+            button.classList.remove('is-copied');
+            icon.textContent = 'content_copy';
+            if (text) text.textContent = '复制';
+        }
+
+        document.querySelectorAll('[data-copy-source]').forEach((button) => {
+            button.addEventListener('click', async () => {
+                const sourceId = button.getAttribute('data-copy-source');
+                const source = document.getElementById(sourceId);
+                if (!source) return;
+                try {
+                    await navigator.clipboard.writeText(source.textContent.trim());
+                    setCopyButtonState(button, true);
+                    clearTimeout(button._copyResetTimer);
+                    button._copyResetTimer = setTimeout(() => {
+                        setCopyButtonState(button, false);
+                    }, 1800);
+                } catch (error) {
+                    console.error(error);
+                }
+            });
+        });
+
+        // ===== Ripple effect =====
+        document.addEventListener('click', (e) => {
+            const target = e.target.closest('.ripple');
+            if (target) {
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple-effect';
+                const rect = target.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = `${size}px`;
+                ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
+                ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
+                target.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            }
+        });
+
+        // ===== Tab switching =====
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabPanels = document.querySelectorAll('.tab-panel');
+        const tabIndicator = document.getElementById('tabIndicator');
+
+        function moveIndicator(btn) {
+            tabIndicator.style.left = btn.offsetLeft + 'px';
+            tabIndicator.style.width = btn.offsetWidth + 'px';
+        }
+
+        function switchTab(btn) {
+            const tabId = btn.dataset.tab;
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabPanels.forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('panel-' + tabId).classList.add('active');
+            moveIndicator(btn);
+        }
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => switchTab(btn));
+        });
+
+        // Initialize indicator position
+        requestAnimationFrame(() => {
+            const activeBtn = document.querySelector('.tab-btn.active');
+            if (activeBtn) moveIndicator(activeBtn);
+        });
+
+        // Recalculate on resize
+        window.addEventListener('resize', () => {
+            const activeBtn = document.querySelector('.tab-btn.active');
+            if (activeBtn) moveIndicator(activeBtn);
+        });
+
+        // ===== Footer year =====
+        const startYear = 2026;
+        const nowYear = new Date().getFullYear();
+        document.getElementById('currentYear').textContent = nowYear <= startYear
+            ? String(startYear)
+            : `${startYear}-${nowYear}`;
+    </script>
+</body>
+
+</html>

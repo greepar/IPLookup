@@ -2,6 +2,10 @@
 
 一个基于静态页面和 Cloudflare Worker 的 IP 查询项目。
 
+## Demo
+
+https://ip.qwq.lu
+
 ## 文件
 
 - `index.html`: 前端页面，展示 IPv4、IPv6、User-Agent 和 API 示例。
@@ -14,11 +18,6 @@
 - 单独显示 User-Agent，并支持复制
 - 提供纯文本和详细 JSON 的 API 调试示例
 - 支持浅色、深色和跟随系统三态主题
-
-## Worker 用法
-
-- 纯文本 IP: `https://your-worker.example.workers.dev/`
-- 详细信息: `https://your-worker.example.workers.dev/?detail`
 
 ## 说明
 

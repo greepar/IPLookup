@@ -1010,12 +1010,10 @@
 
         .stagger-item {
             opacity: 0;
-            transform: translateY(18px);
         }
 
         .stagger-item.is-visible {
             opacity: 1;
-            transform: translateY(0);
         }
 
         .copy-toast {
@@ -1388,10 +1386,10 @@
             const items = document.querySelectorAll('.stagger-item');
             items.forEach((item, index) => {
                 const animation = item.animate([
-                    { opacity: 0, transform: 'translateY(18px)' },
-                    { opacity: 1, transform: 'translateY(0)' }
+                    { opacity: 0 },
+                    { opacity: 1 }
                 ], {
-                    duration: 500,
+                    duration: 420,
                     delay: 200 + index * 100,
                     easing: 'ease-out',
                     fill: 'both'
@@ -1407,10 +1405,15 @@
         const userAgentValue = document.getElementById('userAgentValue');
         const ipv4Block = document.getElementById('ipv4Block');
         const ipv6Block = document.getElementById('ipv6Block');
+        const ipAvailability = {
+            v4: false,
+            v6: false
+        };
 
         function updateNetworkPriorityState(family) {
-            ipv4Block?.classList.toggle('is-priority', family === 'v4');
-            ipv6Block?.classList.toggle('is-priority', family === 'v6');
+            const shouldHighlight = ipAvailability.v4 && ipAvailability.v6;
+            ipv4Block?.classList.toggle('is-priority', shouldHighlight && family === 'v4');
+            ipv6Block?.classList.toggle('is-priority', shouldHighlight && family === 'v6');
         }
 
         function updateUserAgent(value) {
@@ -1478,9 +1481,11 @@
         async function fetchIPData(url, contentEl, addressEl, versionKey) {
             try {
                 const data = await fetchIPJson(url);
+                ipAvailability[versionKey] = true;
                 renderIPInfo(data, contentEl, addressEl);
                 return data;
             } catch (err) {
+                ipAvailability[versionKey] = false;
                 if (err.name === 'AbortError') {
                     renderError(contentEl, addressEl, `无法获取到 ${versionKey} 地址`, '请求超时');
                 } else {
@@ -1515,13 +1520,17 @@
             updateNetworkPriorityState(autoData.family);
 
             if (autoData.family === 'v4') {
+                ipAvailability.v4 = true;
                 renderIPInfo(autoData, ipv4Content, ipv4Address);
                 await fetchIPData('https://6.qwq.lu/?detail', ipv6Content, ipv6Address, 'v6');
+                updateNetworkPriorityState(autoData.family);
                 return;
             }
 
+            ipAvailability.v6 = true;
             renderIPInfo(autoData, ipv6Content, ipv6Address);
             await fetchIPData('https://4.qwq.lu/?detail', ipv4Content, ipv4Address, 'v4');
+            updateNetworkPriorityState(autoData.family);
         }
 
         initIPLookup();

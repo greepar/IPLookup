@@ -14,10 +14,13 @@ export default {
     }
 
     const url = new URL(request.url);
+    const hostname = url.hostname;
     const ip =
       request.headers.get("CF-Connecting-IP") ||
       request.headers.get("X-Forwarded-For")?.split(",")[0]?.trim() ||
       "unknown";
+    const family = detectIpFamily(ip);
+    const hostMode = getHostMode(hostname);
 
     if (!url.searchParams.has("detail")) {
       return new Response(ip, {
@@ -33,6 +36,8 @@ export default {
     return new Response(
       JSON.stringify({
         ip,
+        family,
+        hostMode,
         ipv6: request.headers.get("CF-Connecting-IPv6") || null,
         country: request.headers.get("CF-IPCountry") || cf.country || null,
         region: cf.region || null,
@@ -60,3 +65,27 @@ export default {
     );
   },
 };
+
+function detectIpFamily(ip) {
+  if (!ip || ip === "unknown") {
+    return "unknown";
+  }
+
+  return ip.includes(":") ? "v6" : "v4";
+}
+
+function getHostMode(hostname) {
+  if (hostname.startsWith("4.")) {
+    return "v4";
+  }
+
+  if (hostname.startsWith("6.")) {
+    return "v6";
+  }
+
+  if (hostname.startsWith("46.")) {
+    return "auto";
+  }
+
+  return "unknown";
+}

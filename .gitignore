@@ -1,0 +1,4 @@
+front/node_modules/
+front/dist/
+.DS_Store
+Thumbs.db

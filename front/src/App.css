@@ -1,0 +1,124 @@
+@font-face {
+  font-family: "PingFang Domain";
+  src: url("./assets/fonts/PingFangSC-Regular.woff2") format("woff2"),
+    url("./assets/fonts/PingFangSC-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+.domain-home {
+  --md-sys-color-primary: #006a6a;
+  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-primary-container: #6ff7f7;
+  --md-sys-color-on-primary-container: #002020;
+  --md-sys-color-secondary: #4a6363;
+  --md-sys-color-secondary-container: #cce8e7;
+  --md-sys-color-tertiary: #735b2e;
+  --md-sys-color-tertiary-container: #ffdea6;
+  --md-sys-color-surface: #f9f3e9;
+  --md-sys-color-surface-container-lowest: #ffffff;
+  --md-sys-color-surface-container-high: #eee4d7;
+  --md-sys-color-surface-container-highest: #e6dccf;
+  --md-sys-color-on-surface: #191c1c;
+  --md-sys-color-on-surface-variant: #3f4948;
+  --md-sys-color-outline: #6f7978;
+  --md-sys-color-outline-variant: #bec9c8;
+
+  min-height: 100vh;
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 24px;
+  color: var(--md-sys-color-on-surface);
+  background: var(--md-sys-color-surface);
+  font-family: "PingFang Domain", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.domain-home::-webkit-scrollbar {
+  display: none;
+}
+
+.domain-home--tool {
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+
+.domain-shell {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 18px;
+  width: min(1320px, 100%);
+}
+
+.domain-footer {
+  color: rgba(63, 73, 72, 0.48);
+  font-size: 11px;
+  line-height: 16px;
+  text-align: left;
+}
+
+.domain-home::before,
+.domain-home::after {
+  position: absolute;
+  z-index: 0;
+  width: min(620px, 78vw);
+  aspect-ratio: 1.7;
+  content: "";
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  opacity: 0.12;
+}
+
+.domain-home::before {
+  top: 11vh;
+  left: max(-210px, calc(50% - 940px));
+  background-image: url("data:image/svg+xml,%3Csvg width='680' height='400' viewBox='0 0 680 400' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M22 238C122 72 250 310 370 146C464 18 574 70 652 184' stroke='%23006A6A' stroke-width='2.5' stroke-linecap='round' stroke-dasharray='9 15'/%3E%3Cpath d='M62 308C158 194 272 392 426 230C512 140 592 150 650 244' stroke='%234A6363' stroke-width='2' stroke-linecap='round' stroke-dasharray='6 14'/%3E%3C/svg%3E");
+  transform: rotate(-5deg);
+}
+
+.domain-home::after {
+  right: max(-230px, calc(50% - 980px));
+  bottom: 12vh;
+  background-image: url("data:image/svg+xml,%3Csvg width='680' height='400' viewBox='0 0 680 400' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M34 210C140 316 224 70 350 178C462 274 536 112 648 190' stroke='%23735B2E' stroke-width='2.5' stroke-linecap='round' stroke-dasharray='8 16'/%3E%3Cpath d='M18 276C118 360 244 146 376 244C488 328 580 212 662 276' stroke='%23006A6A' stroke-width='2' stroke-linecap='round' stroke-dasharray='5 13'/%3E%3C/svg%3E");
+  transform: rotate(6deg);
+}
+
+@media (max-width: 760px) {
+  .domain-home--tool {
+    place-items: start center;
+    padding-top: 24px;
+  }
+}
+
+@media (max-width: 560px) {
+  .domain-home {
+    padding: 18px;
+    padding-top: 30vh;
+  }
+
+  .domain-home--tool {
+    padding-top: 18px;
+    padding-bottom: 28px;
+  }
+
+  .domain-home::before,
+  .domain-home::after {
+    width: 420px;
+    opacity: 0.09;
+  }
+
+  .domain-home::before {
+    left: -270px;
+  }
+
+  .domain-home::after {
+    right: -290px;
+  }
+}

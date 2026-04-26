@@ -1,7 +1,10 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import IpLocationMap from './components/maps/IpLocationMap.vue'
 
 const emptyCoordinates = {
   coordinates: '未提供',
+  latitude: null,
+  longitude: null,
   mapX: '50%',
   mapY: '50%',
 }
@@ -45,6 +48,8 @@ function formatCoordinates(data) {
 
   return {
     coordinates: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
+    latitude,
+    longitude,
     mapX: `${Math.min(96, Math.max(4, ((longitude + 180) / 360) * 100)).toFixed(1)}%`,
     mapY: `${Math.min(96, Math.max(4, ((90 - latitude) / 180) * 100)).toFixed(1)}%`,
   }
@@ -145,7 +150,6 @@ const collapseTransition = [
   `height ${collapseDuration}ms cubic-bezier(0.16, 1, 0.3, 1)`,
   'opacity 280ms ease',
   `transform ${collapseDuration}ms cubic-bezier(0.16, 1, 0.3, 1)`,
-  `filter ${collapseDuration}ms cubic-bezier(0.16, 1, 0.3, 1)`,
 ].join(', ')
 
 function normalizeProtocol(profile, version) {
@@ -176,6 +180,8 @@ function normalizeProtocol(profile, version) {
       timezone: profile?.timezone || '未提供',
       tlsVersion: profile?.tlsVersion || '未提供',
       coordinates: profile?.coordinates || '未提供',
+      latitude: profile?.latitude ?? null,
+      longitude: profile?.longitude ?? null,
       mapX: profile?.mapX || '50%',
       mapY: profile?.mapY || '50%',
       mapNote: `${label} 缺失`,
@@ -191,11 +197,15 @@ function normalizeProtocol(profile, version) {
 
 export default {
   name: 'ToolsPage',
+  components: {
+    IpLocationMap,
+  },
   setup() {
     const selectedVersion = ref('overview')
     const copiedVersion = ref('')
     const copiedCommand = ref('')
     const preferredVersion = ref('')
+    const locationMap = ref(null)
     const protocolProfiles = ref({
       ipv4: createProtocolProfile('ipv4'),
       ipv6: createProtocolProfile('ipv6'),
@@ -352,7 +362,6 @@ export default {
       element.style.height = '0'
       element.style.opacity = '0'
       element.style.transform = 'translateY(-3px) scale(0.992)'
-      element.style.filter = 'blur(1px)'
       element.style.overflow = 'hidden'
       element.offsetHeight
     }
@@ -374,7 +383,6 @@ export default {
         element.style.height = targetHeight
         element.style.opacity = '1'
         element.style.transform = 'translateY(0)'
-        element.style.filter = 'blur(0)'
         finishCollapseTransition(element, done)
       })
     }
@@ -385,7 +393,6 @@ export default {
       element.style.height = `${element.scrollHeight}px`
       element.style.opacity = '1'
       element.style.transform = 'translateY(0)'
-      element.style.filter = 'blur(0)'
       element.style.overflow = 'hidden'
       element.offsetHeight
     }
@@ -401,7 +408,6 @@ export default {
         element.style.height = '0'
         element.style.opacity = '0'
         element.style.transform = 'translateY(-3px) scale(0.992)'
-        element.style.filter = 'blur(1px)'
         finishCollapseTransition(element, done)
       })
     }
@@ -412,8 +418,19 @@ export default {
       element.style.height = ''
       element.style.opacity = ''
       element.style.transform = ''
-      element.style.filter = ''
       element.style.overflow = ''
+    }
+
+    function handleMapCollapseTransitionEnd(event) {
+      if (event.target !== event.currentTarget || event.propertyName !== 'grid-template-rows') {
+        return
+      }
+
+      if (!collapsedPanels.value.map) {
+        window.requestAnimationFrame(() => {
+          locationMap.value?.refreshMap()
+        })
+      }
     }
 
     async function writeToClipboard(text) {
@@ -487,7 +504,9 @@ export default {
       copyAddress,
       copyCommand,
       hiddenPanels,
+      handleMapCollapseTransitionEnd,
       ipCards,
+      locationMap,
       preferredVersion,
       priorityTitle,
       selectedVersion,

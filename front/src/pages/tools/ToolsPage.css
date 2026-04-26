@@ -27,7 +27,7 @@
 .ip-tabs-panel {
   align-self: start;
   padding: 8px 8px 8px 4px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.46), rgba(247, 242, 234, 0.34));
+  background: rgba(255, 255, 255, 0.46);
   border-radius: 30px;
   backdrop-filter: blur(10px);
 }
@@ -74,7 +74,7 @@
   display: grid;
   gap: 14px;
   padding: 18px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.5), rgba(246, 241, 234, 0.4));
+  background: rgba(255, 255, 255, 0.5);
   border-radius: 30px;
   backdrop-filter: blur(12px);
   animation: panel-swap 260ms cubic-bezier(0.2, 0, 0, 1);
@@ -146,7 +146,7 @@
   display: grid;
   gap: 18px;
   padding: 20px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.52), rgba(246, 241, 234, 0.38));
+  background: rgba(255, 255, 255, 0.52);
   border-radius: 30px;
   backdrop-filter: blur(12px);
   animation: panel-swap 260ms cubic-bezier(0.2, 0, 0, 1);
@@ -227,7 +227,7 @@
   grid-template-columns: 1fr;
   gap: 0;
   overflow: hidden;
-  background: linear-gradient(90deg, #f7f3ed, #f5f0e9);
+  background: #f7f3ed;
   border: 1px solid rgba(236, 228, 217, 0.9);
   border-radius: 24px;
   box-shadow: 0 10px 24px rgba(177, 168, 154, 0.08);
@@ -364,12 +364,12 @@
   min-width: 0;
   min-height: 152px;
   padding: 14px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.34), rgba(246, 240, 232, 0.26));
+  background: rgba(255, 255, 255, 0.34);
   border-radius: 22px;
 }
 
 .ip-section--muted {
-  background: linear-gradient(90deg, rgba(238, 232, 224, 0.44), rgba(232, 226, 217, 0.34));
+  background: rgba(238, 232, 224, 0.44);
 }
 
 .ip-section__header {
@@ -433,24 +433,17 @@
 .ip-collapse-leave-to {
   opacity: 0;
   transform: translateY(-3px) scale(0.992);
-  filter: blur(1px);
 }
 
 .ip-collapse-enter-to,
 .ip-collapse-leave-from {
   opacity: 1;
   transform: translateY(0);
-  filter: blur(0);
 }
 
 .ip-mask-wrap {
   position: relative;
   min-height: 74px;
-  border-radius: 18px;
-}
-
-.ip-mask-wrap--map {
-  overflow: hidden;
   border-radius: 18px;
 }
 
@@ -529,124 +522,107 @@
 }
 
 .ip-map-panel {
+  position: relative;
   display: grid;
-  min-height: 120px;
-  align-content: center;
+  min-height: 0;
+  align-content: stretch;
   gap: 10px;
-  padding: 14px;
-  background: linear-gradient(90deg, #fcfaf5, #fbf8f1);
+  padding: 16px 14px 54px;
+  background: #fcfaf5;
   border-radius: 24px;
-  backdrop-filter: blur(10px);
 }
 
 .ip-map-panel--collapsed {
   min-height: 0;
-  align-content: stretch;
-  gap: 0;
 }
 
-.ip-map-panel--collapsed > .ip-section__header {
-  align-items: center;
-  margin-bottom: 0;
-}
-
-.ip-map-shell {
-  box-sizing: border-box;
+.ip-map-panel__header {
+  width: 100%;
+  justify-self: stretch;
   display: grid;
-  min-height: 0;
-  gap: 10px;
-  padding: 10px;
-  background: rgba(243, 240, 236, 0.72);
-  border-radius: 20px;
+  justify-items: start;
+  gap: 2px;
+  padding-bottom: 12px;
+  text-align: left;
+  transition:
+    justify-items 160ms ease,
+    text-align 160ms ease;
 }
 
-.ip-map {
-  position: relative;
-  overflow: hidden;
-  min-height: 176px;
-  border-radius: 18px;
-  background:
-    linear-gradient(rgba(0, 106, 106, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 106, 106, 0.04) 1px, transparent 1px),
-    rgba(250, 247, 242, 0.88);
-  background-size: 26px 26px;
-}
-
-.ip-map::before {
-  position: absolute;
-  inset: 18% 10% 20% 12%;
-  content: "";
-  border: 1px dashed rgba(0, 106, 106, 0.14);
-  border-radius: 46% 54% 42% 58%;
-  transform: rotate(-8deg);
-}
-
-.ip-map::after {
-  position: absolute;
-  inset: 30% 18% 22% 24%;
-  content: "";
-  border: 1px dashed rgba(115, 91, 46, 0.1);
-  border-radius: 57% 43% 52% 48%;
-  transform: rotate(12deg);
-}
-
-.ip-map__line {
-  position: absolute;
+.ip-map-panel__header::after {
+  display: block;
+  width: min(100%, 560px);
   height: 1px;
-  background: rgba(0, 106, 106, 0.1);
-  transform-origin: left center;
-}
-
-.ip-map__line--one {
-  width: 72%;
-  top: 38%;
-  left: 14%;
-  transform: rotate(16deg);
-}
-
-.ip-map__line--two {
-  width: 62%;
-  top: 66%;
-  left: 18%;
-  transform: rotate(-13deg);
-}
-
-.ip-map__pin {
-  position: absolute;
-  z-index: 1;
-  width: 12px;
-  height: 12px;
-  background: var(--md-sys-color-primary, #006a6a);
-  border: 3px solid var(--md-sys-color-surface-container-lowest, #ffffff);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.ip-map__pin::after {
-  position: absolute;
-  inset: -10px;
+  margin-top: 8px;
   content: "";
-  border: 1px solid rgba(0, 106, 106, 0.18);
-  border-radius: 50%;
+  background-image: linear-gradient(90deg, rgba(0, 106, 106, 0.34) 0 12px, transparent 12px 22px);
+  background-size: 22px 1px;
+  opacity: 0;
+  transition: opacity 180ms ease;
 }
 
-.ip-map__footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  color: var(--ip-text-muted);
-  font-size: 11px;
+.ip-map-panel:not(.ip-map-panel--collapsed) .ip-map-panel__header {
+  justify-items: center;
+  text-align: center;
+}
+
+.ip-map-panel:not(.ip-map-panel--collapsed) .ip-map-panel__header::after {
+  opacity: 1;
+}
+
+.ip-map-panel__header .ip-section__title,
+.ip-map-panel__header .ip-section__meta {
+  width: 100%;
+  text-align: inherit;
+}
+
+.ip-map-panel__toggle {
+  position: absolute;
+  right: 14px;
+  bottom: 12px;
+  height: 32px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0 14px;
+  color: var(--md-sys-color-primary, #006a6a);
+  background: rgba(0, 106, 106, 0.075);
+  border-radius: 999px;
+  font-size: 12px;
   line-height: 16px;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease;
 }
 
-.ip-map__footer strong {
-  min-width: 0;
+.ip-map-panel__toggle:hover {
+  background: rgba(0, 106, 106, 0.12);
+}
+
+.ip-map-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
   overflow: hidden;
-  color: var(--ip-text-medium);
-  font-weight: 400;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  transition:
+    grid-template-rows 420ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ip-map-collapse--open {
+  grid-template-rows: 1fr;
+}
+
+.ip-map-collapse__body {
+  min-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-4px) scale(0.992);
+  transition:
+    opacity 220ms ease,
+    transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ip-map-collapse--open .ip-map-collapse__body {
+  opacity: 1;
+  transform: translateY(0) scale(1);
 }
 
 @keyframes tool-enter {

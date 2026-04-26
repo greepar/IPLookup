@@ -1,0 +1,141 @@
+.ip-location-map {
+  box-sizing: border-box;
+  display: grid;
+  min-height: 0;
+  gap: 10px;
+  padding: 10px;
+  background: rgba(243, 240, 236, 0.72);
+  border-radius: 20px;
+  contain: layout paint;
+}
+
+.ip-location-map__wrap {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+}
+
+.ip-location-map__canvas {
+  position: relative;
+  overflow: hidden;
+  max-width: 100%;
+  min-width: 280px;
+  border-radius: 18px;
+  background: rgba(250, 247, 242, 0.88);
+}
+
+.ip-location-map__empty {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  color: rgba(63, 73, 72, 0.5);
+  background:
+    linear-gradient(rgba(0, 106, 106, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 106, 106, 0.04) 1px, transparent 1px),
+    rgba(250, 247, 242, 0.88);
+  background-size: 26px 26px;
+  font-size: 13px;
+  line-height: 19px;
+}
+
+.ip-location-map__footer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: rgba(111, 121, 120, 0.58);
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.ip-location-map__resize {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 500;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  color: var(--md-sys-color-primary, #006a6a);
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(0, 106, 106, 0.12);
+  border-radius: 12px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+  cursor: nwse-resize;
+  backdrop-filter: blur(8px);
+  touch-action: none;
+}
+
+.ip-location-map__recenter {
+  position: absolute;
+  right: 10px;
+  bottom: 52px;
+  z-index: 500;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  color: var(--md-sys-color-primary, #006a6a);
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(0, 106, 106, 0.12);
+  border-radius: 12px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(8px);
+}
+
+.ip-location-map__recenter:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.94);
+}
+
+.ip-location-map__recenter:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.ip-location-map__resize:hover {
+  background: rgba(255, 255, 255, 0.94);
+}
+
+.ip-location-map__resize-icon,
+.ip-location-map__control-icon {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+  opacity: 0.82;
+}
+
+.ip-location-map__footer strong {
+  min-width: 0;
+  overflow: hidden;
+  color: rgba(25, 28, 28, 0.68);
+  font-weight: 400;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ip-location-map :deep(.leaflet-container) {
+  width: 100%;
+  height: 100%;
+  background: rgba(250, 247, 242, 0.88);
+  font-family: inherit;
+}
+
+.ip-location-map :deep(.ip-location-map__marker) {
+  width: 18px;
+  height: 18px;
+  background: var(--md-sys-color-primary, #006a6a);
+  border: 3px solid var(--md-sys-color-surface-container-lowest, #ffffff);
+  border-radius: 50%;
+  box-shadow: 0 0 0 10px rgba(0, 106, 106, 0.14), 0 8px 18px rgba(0, 0, 0, 0.18);
+}
+
+.ip-location-map :deep(.leaflet-control-attribution) {
+  color: rgba(63, 73, 72, 0.5);
+  background: rgba(255, 255, 255, 0.68);
+  border-radius: 999px 0 0 0;
+  font-size: 10px;
+}

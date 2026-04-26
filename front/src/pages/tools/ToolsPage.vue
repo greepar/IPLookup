@@ -179,50 +179,29 @@
         :class="{ 'ip-map-panel--collapsed': collapsedPanels.map }"
         aria-label="物理地图"
       >
-        <div class="ip-section__header">
+        <div class="ip-map-panel__header">
           <h2 class="ip-section__title">物理地图</h2>
-          <div class="ip-section__actions">
-            <span class="ip-section__meta">{{ activeIpInfo.mapNote }}</span>
-            <button
-              class="ip-section__toggle"
-              type="button"
-              :aria-expanded="!collapsedPanels.map"
-              @click="togglePanelCollapsed('map')"
-            >
-              {{ collapsedPanels.map ? '展开' : '收起' }}
-            </button>
+        </div>
+        <div
+          class="ip-map-collapse"
+          :class="{ 'ip-map-collapse--open': !collapsedPanels.map }"
+          @transitionend="handleMapCollapseTransitionEnd"
+        >
+          <div class="ip-map-collapse__body">
+            <IpLocationMap
+              ref="locationMap"
+              :profile="activeIpInfo"
+            />
           </div>
         </div>
-        <Transition
-          :css="false"
-          name="ip-collapse"
-          @before-enter="beforeCollapseEnter"
-          @enter="collapseEnter"
-          @after-enter="afterCollapseTransition"
-          @enter-cancelled="afterCollapseTransition"
-          @before-leave="beforeCollapseLeave"
-          @leave="collapseLeave"
-          @after-leave="afterCollapseTransition"
-          @leave-cancelled="afterCollapseTransition"
+        <button
+          class="ip-map-panel__toggle"
+          type="button"
+          :aria-expanded="!collapsedPanels.map"
+          @click="togglePanelCollapsed('map')"
         >
-          <div v-if="!collapsedPanels.map" class="ip-map-shell">
-            <div class="ip-mask-wrap ip-mask-wrap--map">
-              <div class="ip-map" role="img" :aria-label="`${activeIpInfo.city} 位置示意`">
-                <span class="ip-map__line ip-map__line--one"></span>
-                <span class="ip-map__line ip-map__line--two"></span>
-                <span
-                  v-if="activeIpInfo.available"
-                  class="ip-map__pin"
-                  :style="{ left: activeIpInfo.mapX, top: activeIpInfo.mapY }"
-                ></span>
-              </div>
-              <div class="ip-map__footer">
-                <span>坐标</span>
-                <strong>{{ activeIpInfo.coordinates }}</strong>
-              </div>
-            </div>
-          </div>
-        </Transition>
+          {{ collapsedPanels.map ? '向下展开' : '收起地图' }}
+        </button>
       </section>
     </div>
 

@@ -1,0 +1,44 @@
+@import './base.css';
+
+#app {
+  width: 100%;
+  min-height: 100vh;
+}
+
+body {
+  margin: 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+a {
+  color: var(--md-sys-color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--md-sys-color-on-primary-container);
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font: inherit;
+}
+
+input {
+  font: inherit;
+  border: none;
+  outline: none;
+  background: none;
+}
+
+::selection {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}

@@ -1,4 +1,4 @@
-import ToolsPage from './pages/tools/ToolsPage.vue'
+import ToolsPage from './ToolsPage.vue'
 
 export default {
   name: 'App',

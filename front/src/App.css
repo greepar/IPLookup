@@ -1,12 +1,3 @@
-@font-face {
-  font-family: "PingFang Domain";
-  src: url("./assets/fonts/PingFangSC-Regular.woff2") format("woff2"),
-    url("./assets/fonts/PingFangSC-Regular.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
 .domain-home {
   --md-sys-color-primary: #006a6a;
   --md-sys-color-on-primary: #ffffff;
@@ -36,7 +27,7 @@
   padding: 24px;
   color: var(--md-sys-color-on-surface);
   background: var(--md-sys-color-surface);
-  font-family: "PingFang Domain", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: "Microsoft YaHei", sans-serif;
 }
 
 .domain-home::-webkit-scrollbar {

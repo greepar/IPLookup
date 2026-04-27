@@ -1,4 +1,4 @@
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import IpLocationMap from './components/maps/IpLocationMap.vue'
 
 const emptyCoordinates = {
@@ -35,6 +35,7 @@ function createProtocolProfile(version, state = 'loading') {
     scope: '公网地址',
     timezone: state === 'loading' ? '正在获取…' : '未知',
     tlsVersion: state === 'loading' ? '正在获取…' : '未知',
+    userAgent: state === 'loading' ? '正在获取…' : '未提供',
   }
 }
 
@@ -82,6 +83,7 @@ function profileFromIPData(data, version) {
     region: data.region || '未知',
     timezone: data.timezone || '未知',
     tlsVersion: data.tlsVersion || '未知',
+    userAgent: data.userAgent || '未提供',
   }
 }
 
@@ -104,6 +106,7 @@ function createOverviewProfile(protocolProfiles) {
     carrier: availableProfiles.map((profile) => profile.carrier).filter(Boolean).join(' / ') || primaryProfile.carrier,
     mapNote: '总览示意',
     networkType: availableProfiles.map((profile) => profile.networkType).filter(Boolean).join(' / ') || primaryProfile.networkType,
+    userAgent: availableProfiles.map((profile) => profile.userAgent).filter(Boolean).join(' / ') || primaryProfile.userAgent,
   }
 }
 
@@ -179,6 +182,7 @@ function normalizeProtocol(profile, version) {
       city: profile?.city || '未提供',
       timezone: profile?.timezone || '未提供',
       tlsVersion: profile?.tlsVersion || '未提供',
+      userAgent: profile?.userAgent || '未提供',
       coordinates: profile?.coordinates || '未提供',
       latitude: profile?.latitude ?? null,
       longitude: profile?.longitude ?? null,
@@ -234,6 +238,21 @@ export default {
         key: version,
         ...normalizeProtocol(protocolProfiles.value[version], version),
       }))
+    })
+    const versionTabs = computed(() => {
+      const tabs = [
+        { key: 'overview', label: '总览' },
+      ]
+
+      if (protocolProfiles.value.ipv4.available) {
+        tabs.push({ key: 'ipv4', label: 'IPv4' })
+      }
+
+      if (protocolProfiles.value.ipv6.available) {
+        tabs.push({ key: 'ipv6', label: 'IPv6' })
+      }
+
+      return tabs
     })
     const priorityTitle = computed(() => {
       if (preferredVersion.value === 'ipv4') {
@@ -306,6 +325,12 @@ export default {
     function selectVersion(version) {
       selectedVersion.value = version
     }
+
+    watch(versionTabs, (tabs) => {
+      if (!tabs.some((tab) => tab.key === selectedVersion.value)) {
+        selectedVersion.value = 'overview'
+      }
+    }, { immediate: true })
 
     function togglePanelHidden(panel) {
       hiddenPanels.value = {
@@ -511,6 +536,7 @@ export default {
       priorityTitle,
       selectedVersion,
       selectVersion,
+      versionTabs,
       togglePanelCollapsed,
       togglePanelHidden,
     }

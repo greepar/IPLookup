@@ -37,31 +37,15 @@
         <aside class="ip-tabs-panel" aria-label="IP 类型切换">
           <div class="ip-tabs">
             <button
+              v-for="tab in versionTabs"
+              :key="tab.key"
               class="ip-tabs__item"
-              :class="{ 'ip-tabs__item--active': selectedVersion === 'overview' }"
+              :class="{ 'ip-tabs__item--active': selectedVersion === tab.key }"
               type="button"
-              :aria-pressed="selectedVersion === 'overview'"
-              @click="selectVersion('overview')"
+              :aria-pressed="selectedVersion === tab.key"
+              @click="selectVersion(tab.key)"
             >
-              总览
-            </button>
-            <button
-              class="ip-tabs__item"
-              :class="{ 'ip-tabs__item--active': selectedVersion === 'ipv4' }"
-              type="button"
-              :aria-pressed="selectedVersion === 'ipv4'"
-              @click="selectVersion('ipv4')"
-            >
-              IPv4
-            </button>
-            <button
-              class="ip-tabs__item"
-              :class="{ 'ip-tabs__item--active': selectedVersion === 'ipv6' }"
-              type="button"
-              :aria-pressed="selectedVersion === 'ipv6'"
-              @click="selectVersion('ipv6')"
-            >
-              IPv6
+              {{ tab.label }}
             </button>
           </div>
         </aside>
@@ -125,6 +109,10 @@
                     <div>
                       <dt>连接</dt>
                       <dd>{{ activeIpInfo.networkType }}</dd>
+                    </div>
+                    <div>
+                      <dt>UA</dt>
+                      <dd>{{ activeIpInfo.userAgent }}</dd>
                     </div>
                   </dl>
                   <div v-if="hiddenPanels.network" class="ip-mask-layer" aria-hidden="true">
